@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            word-break: break-all;
+        }
+        #toc {
+            width: 200px;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        #toc a.active {
+            color: red;
+        }
+        #content {
+            margin-left: 200px;
+        }
+    </style>
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            for (var i = 0; i < 50; ++i) {
+                $(".seg-content").append("<p>一个段落而已</p>")
+            }
+
+            (function () {
+                var segs = [];
+                $(".seg-begin").each(function (idx, node) {
+                    segs.push(node)
+
+                    var link = $("<a></a>").attr("href", "#" + $(node).attr("name")).html($(node).children("h1").html())
+                    if (!idx) {
+                        link.addClass("active")
+                    }
+                    var row = $("<li></li>").append(link)
+                    $("#toc ul").append(row)
+                })
+
+                $(window).bind("scroll", function() {
+                    var scrollTop = $(this).scrollTop()
+
+                    var topSeg = null
+                    for (var idx in segs) {
+                        var seg = segs[idx]
+                        if (seg.offsetTop > scrollTop) {
+                            continue
+                        }
+                        if (!topSeg) {
+                            topSeg = seg
+                        } else if (seg.offsetTop >= topSeg.offsetTop) {
+                            topSeg = seg
+                        }
+                    }
+                    if (topSeg) {
+                        $("#toc a").removeClass("active")
+
+                        var link = "#" + $(topSeg).attr("name")
+                        console.log('#toc a[href="' + link + '"]')
+                        $('#toc a[href="' + link + '"]').addClass("active")
+                        // console.log($(topSeg).children("h1").text())
+                    }
+                })
+            })()
+        })
+    </script>
+</head>
+<body>
+    <div id="toc">
+        <ul>
+
+        </ul>
+    </div>
+    <div id="content">
+        <a name="seg-1" class="seg-begin"><h1>第1章节</h1></a>
+        <div class="seg-content"></div>
+        <a name="seg-2" class="seg-begin"><h1>第2章节</h1></a>
+        <div class="seg-content"></div>
+        <a name="seg-3" class="seg-begin"><h1>第3章节</h1></a>
+        <div class="seg-content"></div>
+        <a name="seg-4" class="seg-begin"><h1>第4章节</h1></a>
+        <div class="seg-content"></div>
+    </div>
+</body>
+</html>
